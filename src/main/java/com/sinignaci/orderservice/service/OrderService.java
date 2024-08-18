@@ -1,6 +1,8 @@
 package com.sinignaci.orderservice.service;
 
 
+import com.sinignaci.orderservice.book.Book;
+import com.sinignaci.orderservice.book.BookClient;
 import com.sinignaci.orderservice.domain.Order;
 import com.sinignaci.orderservice.domain.OrderStatus;
 import com.sinignaci.orderservice.repository.OrderRepository;
@@ -13,6 +15,7 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class OrderService implements OrderApi {
 
+    private final BookClient bookClient;
     private final OrderRepository orderRepository;
 
     @Override
@@ -22,12 +25,19 @@ public class OrderService implements OrderApi {
 
     @Override
     public Mono<Order> submitOrder(String isbn, int quantity) {
-        return orderRepository.save(buildRejectedOrder(isbn, quantity));
+        return bookClient.getBookByIsbn(isbn)
+                .map(book -> buildAcceptedOrder(book, quantity))
+                .defaultIfEmpty(buildRejectedOrder(isbn, quantity))
+                .flatMap(orderRepository::save);
     }
 
-    private static Order buildRejectedOrder(String isbn, int quantity) {
+    public static Order buildRejectedOrder(String isbn, int quantity) {
         return Order.of(isbn, null, null, quantity, OrderStatus.REJECTED);
     }
 
+    public static Order buildAcceptedOrder(Book book, int quantity) {
+        String bookName = String.join(" - ", book.title(), book.author());
+        return Order.of(book.isbn(), bookName, book.price(), quantity, OrderStatus.ACCEPTED);
+    }
 
 }

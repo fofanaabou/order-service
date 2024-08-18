@@ -24,3 +24,6 @@ server:
     connection-timeout: 2s
     idle-timeout: 15s
 
+polar:
+  catalog-service-uri: http://localhost:8081
+
