@@ -36,7 +36,6 @@ class OrderRepositoryTest {
         registry.add("spring.flyway.url", postgresql::getJdbcUrl);
         registry.add("spring.flyway..user", postgresql::getUsername);
         registry.add("spring.flyway.password", postgresql::getPassword);
-
     }
 
     private static String r2dbcUrl() {
@@ -56,7 +55,5 @@ class OrderRepositoryTest {
                         order -> order.status().equals(OrderStatus.REJECTED)
                 )
                 .verifyComplete();
-
     }
-
 }
