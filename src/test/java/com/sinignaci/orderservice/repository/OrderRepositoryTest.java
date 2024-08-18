@@ -56,4 +56,11 @@ class OrderRepositoryTest {
                 )
                 .verifyComplete();
     }
+
+    @Test
+    void findOrderByIdWhenNotExisting() {
+        StepVerifier.create(orderRepository.findById(394L))
+                .expectNextCount(0)
+                .verifyComplete();
+    }
 }
