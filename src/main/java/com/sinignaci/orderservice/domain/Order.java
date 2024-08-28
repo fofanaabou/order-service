@@ -9,7 +9,7 @@ import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.LocalDateTime;
 
-@Builder
+@Builder(toBuilder = true)
 @Table("orders")
 public record Order(
         @Id
