@@ -24,11 +24,7 @@ class TestcontainersConfiguration {
         registry.add("spring.r2dbc.url", TestcontainersConfiguration::r2dbcUrl);
         registry.add("spring.r2dbc.username", postgresql::getUsername);
         registry.add("spring.r2dbc.password", postgresql::getPassword);
-
-		registry.add("spring.flyway.user", postgresql::getUsername);
-		registry.add("spring.flyway.password", postgresql::getPassword);
-		registry.add("spring.flyway.url", TestcontainersConfiguration::jdbcUrl);
-
+        registry.add("spring.flyway.url", postgresql::getJdbcUrl);
 
 
 		registry.add("spring.rabbitmq.host", rabbitmq::getHost);
@@ -41,9 +37,4 @@ class TestcontainersConfiguration {
         return String.format("r2dbc:postgresql://%s:%s/%s", postgresql.getHost(),
                 postgresql.getMappedPort(PostgreSQLContainer.POSTGRESQL_PORT), postgresql.getDatabaseName());
     }
-
-	private static String jdbcUrl() {
-		return String.format("jdbc:postgresql://%s:%s/%s", postgresql.getHost(),
-				postgresql.getMappedPort(PostgreSQLContainer.POSTGRESQL_PORT), postgresql.getDatabaseName());
-	}
 }
