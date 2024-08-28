@@ -14,7 +14,14 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cloud.stream.binder.test.OutputDestination;
 import org.springframework.cloud.stream.binder.test.TestChannelBinderConfiguration;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.containers.RabbitMQContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.utility.DockerImageName;
 import reactor.core.publisher.Mono;
 
 import java.io.IOException;
@@ -22,7 +29,8 @@ import java.io.IOException;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
-@Import({TestcontainersConfiguration.class, TestChannelBinderConfiguration.class})
+@Testcontainers
+@Import(TestChannelBinderConfiguration.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class OrderServiceApplicationTests {
 
@@ -37,6 +45,34 @@ class OrderServiceApplicationTests {
 
     @MockBean
     private BookClient bookClient;
+
+
+	@Container
+	static PostgreSQLContainer<?> postgresql = new PostgreSQLContainer<>(DockerImageName.parse("postgres:latest"));
+
+	@Container
+	static RabbitMQContainer rabbitmq = new RabbitMQContainer(DockerImageName.parse("rabbitmq:3"));
+
+
+	@DynamicPropertySource
+	static void dynamicProperties(DynamicPropertyRegistry registry) {
+
+		registry.add("spring.r2dbc.url", OrderServiceApplicationTests::r2dbcUrl);
+		registry.add("spring.r2dbc.username", postgresql::getUsername);
+		registry.add("spring.r2dbc.password", postgresql::getPassword);
+		registry.add("spring.flyway.url", postgresql::getJdbcUrl);
+
+
+		registry.add("spring.rabbitmq.host", rabbitmq::getHost);
+		registry.add("spring.rabbitmq.port", rabbitmq::getAmqpPort);
+		registry.add("spring.rabbitmq.username", rabbitmq::getAdminUsername);
+		registry.add("spring.rabbitmq.password", rabbitmq::getAdminPassword);
+	}
+
+	private static String r2dbcUrl() {
+		return String.format("r2dbc:postgresql://%s:%s/%s", postgresql.getHost(),
+				postgresql.getMappedPort(PostgreSQLContainer.POSTGRESQL_PORT), postgresql.getDatabaseName());
+	}
 
     @Test
     void whenGetOrdersThenReturn() throws IOException {
