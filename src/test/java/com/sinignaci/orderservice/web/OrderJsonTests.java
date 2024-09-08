@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.boot.test.json.JacksonTester;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -19,10 +20,11 @@ class OrderJsonTests {
 
     @Test
     void testSerialize() throws Exception {
+        var date = LocalDateTime.now(Clock.systemDefaultZone());
         var order =  Order.of( "1234567890", "Book Name", 9.90, 1, OrderStatus.ACCEPTED)
                 .withId(123L)
-                .withLastModifiedDate(LocalDateTime.now())
-                .withCreatedDate(LocalDateTime.now());
+                .withLastModifiedDate(date)
+                .withCreatedDate(date);
         var jsonContent = json.write(order);
         assertThat(jsonContent).extractingJsonPathNumberValue("@.id")
                 .isEqualTo(order.id().intValue());
