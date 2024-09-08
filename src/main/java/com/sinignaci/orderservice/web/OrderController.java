@@ -5,6 +5,8 @@ import com.sinignaci.orderservice.service.OrderApi;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
@@ -20,8 +22,8 @@ public class OrderController {
 
 
     @GetMapping
-    public Flux<Order> getAllOrders() {
-        return orderApi.fetchAll();
+    public Flux<Order> getAllOrders(@AuthenticationPrincipal Jwt jwt) {
+        return orderApi.fetchAll(jwt.getSubject());
     }
 
     @PostMapping

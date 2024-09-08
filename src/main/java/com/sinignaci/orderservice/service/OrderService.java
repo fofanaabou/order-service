@@ -29,8 +29,8 @@ public class OrderService implements OrderApi {
     private final StreamBridge streamBridge;
 
     @Override
-    public Flux<Order> fetchAll() {
-        return orderRepository.findAll();
+    public Flux<Order> fetchAll(String userId) {
+        return orderRepository.findAllByCreatedBy(userId);
     }
 
     @Override
@@ -47,7 +47,7 @@ public class OrderService implements OrderApi {
     public Flux<Order> consumeOrderDispatchedEvent(Flux<OrderDispatchedMessage> flux) {
         return flux
                 .flatMap(message -> orderRepository.findById(message.orderId()))
-                .map(OrderService::BuildDispatchedOrder)
+                .map(OrderService::buildDispatchedOrder)
                 .flatMap(orderRepository::save);
     }
 
@@ -60,7 +60,7 @@ public class OrderService implements OrderApi {
         return Order.of(book.isbn(), bookName, book.price(), quantity, OrderStatus.ACCEPTED);
     }
 
-    private static Order BuildDispatchedOrder(Order existingOrder) {
+    private static Order buildDispatchedOrder(Order existingOrder) {
         return existingOrder.toBuilder()
                 .status(OrderStatus.DISPATCHED)
                 .build();

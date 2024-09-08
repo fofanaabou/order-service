@@ -4,6 +4,7 @@ spring:
   lifecycle:
     timeout-per-shutdown-phase: 15s
 
+
   r2dbc:
     username: postgres
     password: postgres
@@ -51,6 +52,11 @@ spring:
     username: broker
     password: broker
     connection-timeout: 5s
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8085/realms/PolarBookshop
 server:
   port: 8082
   shutdown: graceful
