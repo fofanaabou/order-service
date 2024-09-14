@@ -42,7 +42,7 @@ jobs:
         uses: bmuschko/setup-kubeconform@v1
 
       - name: Validate manifests
-        run: kubeconform -summary -verbose k8s
+        run: kustomize build k8s | kubeconform -summary -verbose
   package:
     name: Package and Publish
     if: ${{github.ref == 'refs/heads/master'}}

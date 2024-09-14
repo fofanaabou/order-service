@@ -16,11 +16,13 @@ public class SecurityConfig {
     SecurityWebFilterChain filterChain(ServerHttpSecurity http) {
         http.oauth2ResourceServer(c -> c.jwt(Customizer.withDefaults()));
 
-        http.authorizeExchange(c -> c.anyExchange().authenticated())
+        http.authorizeExchange(c -> c
+                        .pathMatchers("/actuator/**").permitAll()
+                        .pathMatchers("/", "/*.css", "/*.js", "/favicon.ico").permitAll()
+                        .anyExchange().authenticated())
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .requestCache(requestCacheSpec -> requestCacheSpec.requestCache(NoOpServerRequestCache.getInstance()));
 
         return http.build();
     }
-
 }

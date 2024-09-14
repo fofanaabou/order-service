@@ -16,6 +16,7 @@ java {
 ext {
 	set('springCloudVersion', "2023.0.2")
 	set('testcontainersVersion', '1.20.0')
+	set('otelVersion', "2.6.0")
 }
 
 repositories {
@@ -32,12 +33,16 @@ dependencies {
 	implementation 'org.springframework.retry:spring-retry'
 	implementation 'org.springframework.cloud:spring-cloud-stream-binder-rabbit'
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
 	implementation 'org.flywaydb:flyway-core:10.17.1'
 	runtimeOnly 'org.postgresql:postgresql'
 	runtimeOnly 'org.postgresql:r2dbc-postgresql'
 	runtimeOnly 'org.springframework:spring-jdbc'
 	runtimeOnly 'org.flywaydb:flyway-database-postgresql:10.17.1'
+	runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
+	runtimeOnly "io.opentelemetry.javaagent:opentelemetry-javaagent:${otelVersion}"
+
 
 	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 	annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.0'
@@ -80,4 +85,8 @@ bootBuildImage {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+springBoot {
+	buildInfo()
 }

@@ -9,6 +9,7 @@ import com.sinignaci.orderservice.event.OrderAcceptedMessage;
 import com.sinignaci.orderservice.event.OrderDispatchedMessage;
 import com.sinignaci.orderservice.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.stream.function.StreamBridge;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class OrderService implements OrderApi {
