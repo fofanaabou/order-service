@@ -92,4 +92,3 @@ management:
 polar:
   catalog-service-uri: http://localhost:8081
 
-
